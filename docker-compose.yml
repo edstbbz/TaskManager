@@ -2,6 +2,7 @@ version: '3.7'
 
 services:
   web:
+    env_file: variables.env
     build: .
     volumes: &web-volumes
       - &app-volume .:/app:cached
@@ -26,12 +27,11 @@ services:
     command: bundle exec rails s -b '0.0.0.0' -p 3000
 
   db:
-    image: postgres:11.4
+    image: postgres:11.4-alpine
     ports:
       - 5432:5432
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      
 
 volumes:
   bundle_cache:
