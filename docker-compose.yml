@@ -2,8 +2,8 @@ version: '3.7'
 
 services:
   web:
-    env_file: variables.env
     build: .
+    env_file: variables.env
     volumes: &web-volumes
       - &app-volume .:/app:cached
       - ~/.ssh:/root/.ssh
@@ -28,7 +28,7 @@ services:
     image: postgres:11.4-alpine
     ports:
       - 5432:5432
-    environment:
+    env_file: variables.env
       
 
 volumes:
