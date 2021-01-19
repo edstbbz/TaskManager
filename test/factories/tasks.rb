@@ -4,7 +4,6 @@ FactoryBot.define do
     description { 'MyText' }
     author_id { 1 }
     assignee_id { 1 }
-    state { 'MyString' }
-    expired_at { '2021-01-19' }
+    expired_at { '' }
   end
 end
