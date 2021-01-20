@@ -28,6 +28,7 @@ class Task < ApplicationRecord
     event :archive do
       transition released: :archived
       transition released: :new_task
+      transition new_task: :archived
     end
   end
 
