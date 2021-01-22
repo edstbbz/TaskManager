@@ -3,8 +3,8 @@ class CreateTasks < ActiveRecord::Migration[6.1]
     create_table :tasks do |t|
       t.string :name
       t.text :description
-      add_foreign_key :author_id
-      add_foreign_key :assignee_id
+      t.integer :author_id
+      t.integer :assignee_id
       t.string :state
       t.date :expired_at
 
