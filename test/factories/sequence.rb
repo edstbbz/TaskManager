@@ -1,14 +1,6 @@
 FactoryBot.define do
-  sequence :first_name do |n|
-    "first_name#{n}"
-  end
-
-  sequence :last_name do |n|
-    "last_name#{n}"
-  end
-
-  sequence :password do |n|
-    "password#{n}"
+  sequence :string, aliases: [:first_name, :last_name, :password] do |n|
+    "string#{n}"
   end
 
   sequence :email do |n|
@@ -25,8 +17,5 @@ FactoryBot.define do
 
   sequence :expired_at do |n|
     Time.now + n.days
-  end
-  sequence :string do |n|
-    "string#{n}"
   end
 end
