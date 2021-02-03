@@ -4,6 +4,6 @@ FactoryBot.define do
     description { generate :string }
     author factory: :manager
     assignee factory: :manager
-    expired_at { '2021-01-19' }
+    expired_at { nil }
   end
 end
