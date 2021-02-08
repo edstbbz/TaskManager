@@ -9,6 +9,7 @@ import TasksRepository from '../../repositories/TaskRepository';
 import ColumnHeader from '../ColumnHeader';
 import AddPopup from '../AddPopup';
 import TaskForm from '../../forms/TaskForm';
+import EditPopup from '../EditPopup';
 import useStyles from './useStyles';
 
 const STATES = [
@@ -33,6 +34,7 @@ const initialBoard = {
 const MODES = {
   ADD: 'add',
   NONE: 'none',
+  EDIT: 'edit',
 };
 
 const TaskBoard = () => {
@@ -41,6 +43,7 @@ const TaskBoard = () => {
   const [board, setBoard] = useState(initialBoard);
   const [boardCards, setBoardCards] = useState([]);
   const [mode, setMode] = useState(MODES.NONE);
+  const [openedTaskId, setOpenedTaskId] = useState(null);
 
   const loadColumn = (state, page, perPage) =>
     TasksRepository.index({
@@ -108,8 +111,14 @@ const TaskBoard = () => {
     setMode(MODES.ADD);
   };
 
+  const handleOpenEditPopup = (task) => {
+    setOpenedTaskId(task.id);
+    setMode(MODES.EDIT);
+  };
+
   const handleClose = () => {
     setMode(MODES.NONE);
+    setOpenedTaskId(null);
   };
 
   const handleTaskCreate = (params) => {
@@ -120,23 +129,49 @@ const TaskBoard = () => {
     });
   };
 
+  const loadTask = (id) => TasksRepository.show(id).then(({ data: { task } }) => task);
+
+  const handleTaskUpdate = (task) => {
+    const attributes = TaskForm.attributesToSubmit(task);
+
+    return TasksRepository.update(task.id, attributes).then(() => {
+      loadColumnInitial(task.state);
+      handleClose();
+    });
+  };
+
+  const handleTaskDestroy = (task) =>
+    TasksRepository.destroy(task.id).then(() => {
+      loadColumnInitial(task.state);
+      handleClose();
+    });
+
   useEffect(() => loadBoard(), []);
   useEffect(() => generateBoard(), [boardCards]);
 
   return (
     <>
-      <Fab className={styles.addButton} color="primary" aria-label="add" onClick={handleOpenAddPopup}>
-        <AddIcon />
-      </Fab>
-      {mode === MODES.ADD && <AddPopup onCreateCard={handleTaskCreate} onClose={handleClose} />}
       <KanbanBoard
         disableColumnDrag
         renderColumnHeader={(column) => <ColumnHeader column={column} onLoadMore={loadColumnMore} />}
-        renderCard={(card) => <Task task={card} />}
+        renderCard={(card) => <Task onClick={handleOpenEditPopup} task={card} />}
         onCardDragEnd={handleCardDragEnd}
       >
         {board}
       </KanbanBoard>
+      <Fab className={styles.addButton} color="primary" aria-label="add" onClick={handleOpenAddPopup}>
+        <AddIcon />
+      </Fab>
+      {mode === MODES.ADD && <AddPopup onCreateCard={handleTaskCreate} onClose={handleClose} />}
+      {mode === MODES.EDIT && (
+        <EditPopup
+          onLoadCard={loadTask}
+          onCardDestroy={handleTaskDestroy}
+          onCardUpdate={handleTaskUpdate}
+          onClose={handleClose}
+          cardId={openedTaskId}
+        />
+      )}
     </>
   );
 };
