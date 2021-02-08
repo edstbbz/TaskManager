@@ -17,6 +17,7 @@ function headers() {
   };
 }
 
+axios.defaults.headers.get = headers();
 axios.defaults.headers.post = headers();
 axios.defaults.headers.put = headers();
 axios.defaults.headers.delete = headers();
@@ -57,7 +58,9 @@ export default {
     return axios.put(url, body).then(camelize);
   },
 
-  delete(url) {
-    return axios.delete(url);
+  delete(url, json) {
+    const body = decamelize(json);
+
+    return axios.delete(url, body).then(camelize);
   },
 };
