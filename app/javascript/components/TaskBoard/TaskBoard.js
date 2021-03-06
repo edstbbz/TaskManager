@@ -6,6 +6,7 @@ import { propOr } from 'ramda';
 
 import Task from '../Task';
 import TasksRepository from '../../repositories/TaskRepository';
+import TaskPresenter from 'presenters/TaskPresenter';
 import ColumnHeader from '../ColumnHeader';
 import AddPopup from '../AddPopup';
 import TaskForm from '../../forms/TaskForm';
@@ -92,7 +93,7 @@ const TaskBoard = () => {
       return null;
     }
 
-    return TasksRepository.update(task.id, { stateEvent: transition.event })
+    return TasksRepository.update(TaskPresenter.id(task), { stateEvent: transition.event })
       .then(() => {
         loadColumnInitial(destination.toColumnId);
         loadColumnInitial(source.fromColumnId);
@@ -112,7 +113,7 @@ const TaskBoard = () => {
   };
 
   const handleOpenEditPopup = (task) => {
-    setOpenedTaskId(task.id);
+    setOpenedTaskId(TaskPresenter.id(task));
     setMode(MODES.EDIT);
   };
 
@@ -124,7 +125,7 @@ const TaskBoard = () => {
   const handleTaskCreate = (params) => {
     const attributes = TaskForm.attributesToSubmit(params);
     return TasksRepository.create(attributes).then(({ data: { task } }) => {
-      loadColumnInitial(task.state);
+      loadColumnInitial(TaskPresenter.state(task));
       handleClose();
     });
   };
@@ -134,15 +135,15 @@ const TaskBoard = () => {
   const handleTaskUpdate = (task) => {
     const attributes = TaskForm.attributesToSubmit(task);
 
-    return TasksRepository.update(task.id, attributes).then(() => {
-      loadColumnInitial(task.state);
+    return TasksRepository.update(TaskPresenter.id(task), attributes).then(() => {
+      loadColumnInitial(TaskPresenter.state(task));
       handleClose();
     });
   };
 
   const handleTaskDestroy = (task) =>
-    TasksRepository.destroy(task.id).then(() => {
-      loadColumnInitial(task.state);
+    TasksRepository.destroy(TaskPresenter.id(task)).then(() => {
+      loadColumnInitial(TaskPresenter.state(task));
       handleClose();
     });
 
